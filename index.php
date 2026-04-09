@@ -31,7 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($title && $content) {
         // ✅ 修改后的 INSERT（适配你的表结构）
         $stmt = $pdo->prepare("
-            INSERT INTO information 
+            INSERT INTO infomation 
             (title, content, status, created_at) 
             VALUES (?, ?, ?, NOW())
         ");
@@ -49,7 +49,7 @@ $infos = [];
 
 if ($search !== '') {
     $stmt = $pdo->prepare("
-        SELECT * FROM information 
+        SELECT * FROM infomation 
         WHERE title LIKE ? 
         ORDER BY created_at DESC
     ");
@@ -57,7 +57,7 @@ if ($search !== '') {
     $infos = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } else {
     $stmt = $pdo->prepare("
-        SELECT * FROM information 
+        SELECT * FROM infomation 
         ORDER BY created_at DESC LIMIT 10
     ");
     $stmt->execute();
