@@ -27,14 +27,13 @@ $message = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $title   = trim($_POST['title'] ?? '');
     $content = trim($_POST['content'] ?? '');
+    // 列表/搜索共用：在构造 SQL 前
+    $lim = isset($_GET['limit']) ? (int) $_GET['limit'] : 10;
+    $lim = max(1, min($lim, 500)); // 建议上限 500
 
     if ($title && $content) {
         // ✅ 修改后的 INSERT（适配你的表结构）
-        $stmt = $pdo->prepare("
-            INSERT INTO information 
-            (title, content, status, created_at) 
-            VALUES (?, ?, ?, NOW())
-        ");
+$stmt = $pdo->prepare("SELECT * FROM infomation ORDER BY created_at DESC LIMIT " . $lim);
         $stmt->execute([$title, $content, 'pending']);
         
         $message = $lang === 'zh' ? '✅ 上传成功！' : '✅ Uploaded!';
