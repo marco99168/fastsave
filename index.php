@@ -1,10 +1,10 @@
 <?php
-// ====================== 调试模式（成功后可关闭） ======================
+// ====================== 调试模式（成功后可删除） ======================
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-// ====================== CORS 处理 ======================
+// ====================== CORS ======================
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type');
@@ -14,7 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200);
     exit(0);
 }
-// ======================================================
+// =================================================
 
 header('Content-Type: text/html; charset=UTF-8');
 
@@ -29,8 +29,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $content = trim($_POST['content'] ?? '');
 
     if ($title && $content) {
-        $stmt = $pdo->prepare("INSERT INTO information (title, content, status) VALUES (?, ?, 'pending')");
-        $stmt->execute([$title, $content]);
+        // ✅ 修改后的 INSERT（适配你的表结构）
+        $stmt = $pdo->prepare("
+            INSERT INTO information 
+            (title, content, status, created_at) 
+            VALUES (?, ?, ?, NOW())
+        ");
+        $stmt->execute([$title, $content, 'pending']);
+        
         $message = $lang === 'zh' ? '✅ 上传成功！' : '✅ Uploaded!';
     } else {
         $message = $lang === 'zh' ? '❌ 标题和内容不能为空' : '❌ Title and content required';
@@ -42,11 +48,18 @@ $search = isset($_GET['search']) ? trim($_GET['search']) : '';
 $infos = [];
 
 if ($search !== '') {
-    $stmt = $pdo->prepare("SELECT * FROM information WHERE title LIKE ? ORDER BY created_at DESC");
+    $stmt = $pdo->prepare("
+        SELECT * FROM information 
+        WHERE title LIKE ? 
+        ORDER BY created_at DESC
+    ");
     $stmt->execute(['%' . $search . '%']);
     $infos = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } else {
-    $stmt = $pdo->prepare("SELECT * FROM information ORDER BY created_at DESC LIMIT 10");
+    $stmt = $pdo->prepare("
+        SELECT * FROM information 
+        ORDER BY created_at DESC LIMIT 10
+    ");
     $stmt->execute();
     $infos = $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
@@ -102,10 +115,10 @@ if ($search !== '') {
             <?php foreach ($infos as $info): ?>
                 <div class="item">
                     <strong><?php echo htmlspecialchars($info['title']); ?></strong><br><br>
-                    <?php echo nl2br(htmlspecialchars($info['content'])); ?>
+                    <?php echo nl2br(htmlspecialchars($info['content'] ?? '')); ?>
                     <div style="margin-top:10px; color:#888; font-size:0.85em;">
-                        <?php echo date('Y-m-d H:i', strtotime($info['created_at'])); ?> 
-                        (状态: <?php echo $info['status']; ?>)
+                        <?php echo !empty($info['created_at']) ? date('Y-m-d H:i', strtotime($info['created_at'])) : '无时间'; ?> 
+                        (状态: <?php echo htmlspecialchars($info['status'] ?? 'pending'); ?>)
                     </div>
                 </div>
             <?php endforeach; ?>
