@@ -1,8 +1,8 @@
 <?php
 // ====================== 调试模式（成功后可删除） ======================
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
+// ini_set('display_errors', 1);
+// ini_set('display_startup_errors', 1);
+// error_reporting(E_ALL);
 
 // ====================== CORS ======================
 header('Access-Control-Allow-Origin: *');
