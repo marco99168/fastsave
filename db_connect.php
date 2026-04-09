@@ -1,9 +1,15 @@
 <?php
+// ====================== Railway MySQL 自动连接 ======================
+
 $host     = $_ENV['MYSQLHOST']     ?? 'mysql-84.railway.internal';
 $port     = $_ENV['MYSQLPORT']     ?? '3306';
 $dbname   = $_ENV['MYSQLDATABASE'] ?? 'railway';
 $username = $_ENV['MYSQLUSER']     ?? 'root';
-$password = $_ENV['MYSQLPASSWORD'] ?? 'toOowDNQuaQYiqVaDQpwdicqLDIzlrnb';
+$password = $_ENV['MYSQLPASSWORD'] ?? '';
+
+if (empty($password)) {
+    die('❌ MYSQLPASSWORD 环境变量未注入，请检查 Railway Variables');
+}
 
 $dsn = "mysql:host=$host;port=$port;dbname=$dbname;charset=utf8mb4";
 
@@ -14,6 +20,6 @@ try {
     ]);
     $pdo->exec("SET NAMES utf8mb4");
 } catch (PDOException $e) {
-    die('数据库连接失败: ' . $e->getMessage());
+    die('❌ 数据库连接失败: ' . $e->getMessage());
 }
 ?>
