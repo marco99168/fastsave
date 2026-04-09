@@ -5,7 +5,7 @@ $host     = $_ENV['MYSQLHOST']     ?? 'mysql-84.railway.internal';
 $port     = $_ENV['MYSQLPORT']     ?? '3306';
 $dbname   = $_ENV['MYSQLDATABASE'] ?? 'railway';
 $username = $_ENV['MYSQLUSER']     ?? 'root';
-$password = $_ENV['MYSQLPASSWORD'] ?? '';
+$password = $_ENV['MYSQLPASSWORD'] ?? 'toOowDNQuaQYiqVaDQpwdicqLDIzlrnb';
 
 if (empty($password)) {
     die('❌ MYSQLPASSWORD 环境变量未注入，请检查 Railway Variables');
